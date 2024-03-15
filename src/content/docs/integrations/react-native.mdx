@@ -10,7 +10,7 @@ keywords:
   - mobile
 ---
 
-import { Warning } from '../../../components/react/warning'
+import { Warning } from "../../../components/react/warning";
 
 In React Native, MSW works similarly to Node.js, but omits certain request interceptors for modules that are not present in React Native, like the standard `http` module in Node.js.
 
@@ -35,8 +35,8 @@ Create a new `msw.polyfills.js` file with the following content:
 
 ```js
 // msw.polyfills.js
-import 'fast-text-encoding'
-import 'react-native-url-polyfill/auto'
+import "fast-text-encoding";
+import "react-native-url-polyfill/auto";
 ```
 
 We will import this file later, when [Enabling mocking](#enable-mocking).
@@ -47,10 +47,10 @@ Import the `setupServer` function from `msw/native` and call it, providing your 
 
 ```js {2}
 // src/mocks/server.js
-import { setupServer } from 'msw/native'
-import { handlers } from './handlers'
+import { setupServer } from "msw/native";
+import { handlers } from "./handlers";
 
-export const server = setupServer(...handlers)
+export const server = setupServer(...handlers);
 ```
 
 > Learn more about the [`setupServer` API](/docs/api/setup-server). It's the same for Node.js and React Native.
@@ -69,23 +69,23 @@ Import `server` in the entrypoint of your React Native application and call `ser
 
 ```js {6-14} /enableMocking/
 // index.js
-import { AppRegistry } from 'react-native'
-import App from './src/App'
-import { name as appName } from './app.json'
+import { AppRegistry } from "react-native";
+import App from "./src/App";
+import { name as appName } from "./app.json";
 
 async function enableMocking() {
   if (!__DEV__) {
-    return
+    return;
   }
 
-  await import('./msw.polyfills')
-  const { server } = await import('./src/mocks/server')
-  server.listen()
+  await import("./msw.polyfills");
+  const { server } = await import("./src/mocks/server");
+  server.listen();
 }
 
 enableMocking().then(() => {
-  AppRegistry.registerComponent(appName, () => App)
-})
+  AppRegistry.registerComponent(appName, () => App);
+});
 ```
 
 > Don't forget to import the `msw.polyfills.js` module!
@@ -108,3 +108,9 @@ For end-to-end testing, make sure you have [Enabled MSW in development](#develop
 -import { setupServer } from 'msw/node'
 +import { setupServer } from 'msw/native'
 ```
+
+### Network request fails with `TypeError: Failed to fetch`
+
+**Reason:** `/node_modules/@mswjs/interceptors/src/interceptors/fetch/index.ts` throws at `createNetworkError` because your `Node` version is not `≥18.17`
+
+**Solution:** Upgrade your Node version to `≥18.17`.
